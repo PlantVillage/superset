@@ -71,6 +71,58 @@ CACHE_CONFIG = {
 }
 DATA_CACHE_CONFIG = CACHE_CONFIG
 
+##########################################################################
+# Custom OAuth
+##########################################################################
+
+from flask_appbuilder.security.manager import AUTH_OAUTH
+from custom_sso_security_manager import CustomSsoSecurityManager
+CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
+
+print(">>>>>>>>>>>>>>>>>>>>>>>>> SUPERSET CONFIG")
+
+
+# Set the authentication type to OAuth
+AUTH_TYPE = AUTH_OAUTH
+
+OAUTH_PROVIDERS = [
+    {   'name':'PlantVillage',
+        'token_key':'access_token', # Name of the token in the response of access_token_url
+        'icon':'fa-address-card',   # Icon for the provider
+        'remote_app': {
+            'client_id':'WBKa8CA7xXMl5ooYtBzatPUsTHN7LU-E1GqHtCuBwGU',  # Client Id (Identify Superset application)
+            'client_secret':'7FzJUxnGyltuA2kX__wicuXG3V4T1RP4NN7tVf9g_Hg', # Secret for this Client Id (Identify Superset application)
+            'client_kwargs':{
+                'scope': 'read'               # Scope for the Authorization
+            },
+            'access_token_method':'POST',    # HTTP Method to call access_token_url
+            'access_token_params':{        # Additional parameters for calls to access_token_url
+                'client_id':'WBKa8CA7xXMl5ooYtBzatPUsTHN7LU-E1GqHtCuBwGU',
+                'grant_type': 'authorization_code' # authorization_code | password | client_credentials
+            },
+            'access_token_headers':{    # Additional headers for calls to access_token_url
+                'Authorization': 'Basic Base64EncodedClientIdAndSecret'
+            },
+            'api_base_url':'http://plantvillage.site',
+            'access_token_url':'http://plantvillage.site/oauth/token',
+            'authorize_url':'http://plantvillage.site/oauth/authorize'
+        }
+    }
+]
+
+# Will allow user self registration, allowing to create Flask users from Authorized User
+AUTH_USER_REGISTRATION = True
+
+# The default user self registration role
+AUTH_USER_REGISTRATION_ROLE = "Public"
+
+logger.info("##########################################################################")
+logger.info("# CUSOTOM LOGIN FILE")
+logger.info("##########################################################################")
+
+##########################################################################
+# Custom OAuth
+##########################################################################
 
 class CeleryConfig:
     broker_url = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_DB}"
